@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = " https://institutehub-iev4.onrender.com";
 
 function CourseDetails() {
   const { id } = useParams();

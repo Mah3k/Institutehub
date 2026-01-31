@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = " https://institutehub-iev4.onrender.com";
 
 function Register() {
   const [name, setName] = useState("");

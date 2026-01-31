@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import MyCourseCard from "../components/MyCourseCard";
 
-const API_URL = "http://localhost:5000/api"; 
+const API_URL = " https://institutehub-iev4.onrender.com"; 
 
 function CoursePage() {
   const [courses, setCourses] = useState([]);

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Mail, User, MessageSquare } from "lucide-react";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = " https://institutehub-iev4.onrender.com";
 
 function Contact() {
   const [form, setForm] = useState({

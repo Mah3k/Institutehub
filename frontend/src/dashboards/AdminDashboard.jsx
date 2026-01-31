@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = " https://institutehub-iev4.onrender.com";
 
 function AdminDashboard() {
   const { token, role } = useAuth();
