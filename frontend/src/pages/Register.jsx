@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
-const API_URL = import.meta.env.VITE_API_URL;
+// ✅ Use full backend URL directly
+const API_URL = "https://institutehubb.netlify.app/api/auth";
 
 function Register() {
   const [name, setName] = useState("");
@@ -29,18 +30,21 @@ function Register() {
         body: JSON.stringify({ name, email, password, role }),
       });
 
+      // ✅ Parse JSON
       const data = await response.json();
 
       if (!response.ok) throw new Error(data.message || "Registration failed");
 
+      // ✅ Save token & role
       if (data.token && data.user?.role) login(data.token, data.user.role.toLowerCase());
 
+      // ✅ Redirect based on role
       if (role === "admin") navigate("/admin-dashboard");
       else navigate("/student-dashboard");
     } catch (err) {
       console.error(err);
       if (err.message.includes("Failed to fetch") || err.message.includes("NetworkError")) {
-        setError("Cannot connect to server. Make sure backend is live.");
+        setError("Cannot connect to backend. Make sure Netlify backend is live.");
       } else {
         setError(err.message || "Registration failed");
       }
@@ -81,10 +85,12 @@ function Register() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <input type="text" placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} className="bg-black/40 text-white placeholder-gray-300 px-5 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+
           <select value={role} onChange={(e) => setRole(e.target.value)} className="bg-black/40 text-white px-5 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="student" className="text-black">Student</option>
             <option value="admin" className="text-black">Admin</option>
           </select>
+
           <input type="email" placeholder="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-black/40 text-white placeholder-gray-300 px-5 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" required />
 
           <div className="relative">
