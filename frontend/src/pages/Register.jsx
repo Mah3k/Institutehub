@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
-const API_URL = "https://institutehub-iev4.onrender.com";
+// ✅ Use environment variable for flexibility (Netlify & dev)
+const API_URL = import.meta.env.VITE_API_URL || "https://institutehub-iev4.onrender.com/api/auth";
 
 function Register() {
   const [name, setName] = useState("");
@@ -23,7 +24,7 @@ function Register() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/auth/register`, {
+      const response = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password, role }),
@@ -31,12 +32,13 @@ function Register() {
 
       const data = await response.json();
 
-      if (!response.ok)
-        throw new Error(data.message || "Registration failed");
+      if (!response.ok) throw new Error(data.message || "Registration failed");
 
+      // ✅ Login using context
       if (data.token && data.role) login(data.token, data.role);
 
-      if (data.role === "admin") navigate("/admin-dashboard");
+      // ✅ Redirect based on role
+      if (role === "admin") navigate("/admin-dashboard");
       else navigate("/student-dashboard");
     } catch (err) {
       console.error(err);
@@ -45,7 +47,7 @@ function Register() {
         err.message.includes("NetworkError")
       ) {
         setError(
-          "Cannot connect to server. Make sure backend is running on http://localhost:5000"
+          "Cannot connect to server. Make sure backend is live and URL is correct."
         );
       } else {
         setError(err.message || "Registration failed");
@@ -58,7 +60,7 @@ function Register() {
   return (
     <section className="relative min-h-screen flex items-center justify-center px-6 text-white overflow-hidden bg-gray-900">
 
-    
+      {/* Background Blobs */}
       <div className="absolute inset-0">
         <div className="absolute -top-52 -left-52 w-[700px] h-[700px] rounded-full bg-gradient-to-r from-blue-600 via-cyan-400 to-purple-500 opacity-30 blur-[180px] animate-blobSlow"></div>
         <div className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-red-400 opacity-20 blur-[160px] animate-blobSlow delay-2000"></div>
@@ -78,7 +80,7 @@ function Register() {
         ))}
       </div>
 
-      {/* Register Form  */}
+      {/* Register Form */}
       <div className="relative z-10 w-full max-w-md bg-black/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-10 shadow-2xl hover:shadow-[0_0_60px_rgba(99,102,241,0.5)] transition">
         <h2 className="text-4xl font-extrabold text-center mb-4">
           Create{" "}
@@ -98,8 +100,6 @@ function Register() {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-
-          
           <input
             type="text"
             placeholder="Full Name"
@@ -109,7 +109,6 @@ function Register() {
             required
           />
 
-          
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
@@ -119,7 +118,6 @@ function Register() {
             <option value="admin" className="text-black">Admin</option>
           </select>
 
-          
           <input
             type="email"
             placeholder="Email Address"
@@ -129,7 +127,6 @@ function Register() {
             required
           />
 
-          
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
@@ -139,7 +136,6 @@ function Register() {
               className="w-full bg-black/40 text-white placeholder-gray-300 px-5 py-3 pr-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
-
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -150,7 +146,6 @@ function Register() {
             </button>
           </div>
 
-          
           <button
             type="submit"
             disabled={loading}
@@ -173,7 +168,7 @@ function Register() {
         </div>
       </div>
 
-      
+      {/* Background animations */}
       <style>{`
         @keyframes blobSlow {
           0%, 100% { transform: translate(0px, 0px) scale(1); }
