@@ -4,7 +4,7 @@ import { useAuth } from "../auth/AuthContext";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 // ✅ Full backend URL directly
-const API_URL = "https://institutehubb.netlify.app/api/auth";
+const API_URL = "https://institutehub-iev4.onrender.com";
 
 function Login() {
   const [email, setEmail] = useState("");
