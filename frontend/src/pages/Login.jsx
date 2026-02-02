@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
-// ✅ Correct backend auth base URL
+// ✅ Backend auth URL
 const API_URL = "https://institutehub-iev4.onrender.com/api/auth";
 
 function Login() {
@@ -25,33 +25,36 @@ function Login() {
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          email: email.toLowerCase(),
+          password,
+        }),
       });
 
-      const text = await response.text();
-      let data;
-
-      try {
-        data = JSON.parse(text);
-      } catch {
-        throw new Error("Server error. Invalid response format.");
-      }
+      const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
 
-      const role = data?.user?.role;
-      if (!role) throw new Error("User role missing");
+      if (!data.token || !data.user?.role) {
+        throw new Error("Invalid login response");
+      }
 
-      login(data.token, role.toLowerCase());
+      const role = data.user.role.toLowerCase();
 
-      role === "admin"
-        ? navigate("/admin-dashboard")
-        : navigate("/student-dashboard");
+      // ✅ Save auth state
+      login(data.token, role);
+
+      // ✅ Redirect based on role
+      if (role === "admin") {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/student-dashboard");
+      }
 
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -60,15 +63,15 @@ function Login() {
   return (
     <section className="relative min-h-screen flex items-center justify-center px-6 text-white overflow-hidden bg-gray-900">
 
-      {/* 🌟 GLOWING BACKGROUND BLOBS */}
+      {/* Background blobs */}
       <div className="absolute inset-0">
         <div className="absolute -top-52 -left-52 w-[700px] h-[700px] rounded-full bg-gradient-to-r from-blue-600 via-cyan-400 to-purple-500 opacity-30 blur-[180px] animate-blobSlow"></div>
         <div className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-red-400 opacity-20 blur-[160px] animate-blobSlow delay-2000"></div>
         <div className="absolute top-1/4 right-1/3 w-[300px] h-[300px] rounded-full bg-cyan-500 opacity-25 blur-[100px] animate-pulse"></div>
       </div>
 
-      {/* ✨ GLASS LOGIN CARD */}
-      <div className="relative z-10 w-full max-w-md bg-black/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-10 shadow-2xl hover:shadow-[0_0_60px_rgba(99,102,241,0.5)] transition">
+      {/* Login Card */}
+      <div className="relative z-10 w-full max-w-md bg-black/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-10 shadow-2xl">
 
         <h2 className="text-4xl font-extrabold text-center mb-4">
           Welcome{" "}
@@ -120,23 +123,20 @@ function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-full font-semibold bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400 hover:from-purple-600 hover:via-blue-600 hover:to-cyan-500 transition shadow-lg disabled:opacity-50"
+            className="w-full py-3 rounded-full font-semibold bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400 disabled:opacity-50"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
         <div className="mt-8 text-center text-gray-300">
-          <p>
-            Don’t have an account?{" "}
-            <Link to="/register" className="text-blue-400 hover:underline font-semibold">
-              Register
-            </Link>
-          </p>
+          Don’t have an account?{" "}
+          <Link to="/register" className="text-blue-400 hover:underline font-semibold">
+            Register
+          </Link>
         </div>
       </div>
 
-      {/* 🎨 ANIMATION */}
       <style>{`
         @keyframes blobSlow {
           0%,100% { transform: translate(0,0) scale(1); }

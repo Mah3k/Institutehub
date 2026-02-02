@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
 // ✅ Backend auth URL
@@ -14,13 +13,14 @@ function Register() {
   const [role, setRole] = useState("student");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
     try {
@@ -30,25 +30,19 @@ function Register() {
         body: JSON.stringify({ name, email, password, role }),
       });
 
-      const text = await response.text();
-      let data;
+      const data = await response.json();
 
-      try {
-        data = JSON.parse(text);
-      } catch {
-        throw new Error("Backend did not return JSON. Check API URL.");
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
       }
 
-      if (!response.ok) throw new Error(data.message || "Registration failed");
+      // ✅ Registration success (NO auto-login)
+      setSuccess("Registration successful. Please login.");
 
-      // ✅ Save token & role
-      if (data.token && data.user?.role) {
-        login(data.token, data.user.role.toLowerCase());
-      }
-
-      // ✅ Redirect based on role
-      if (data.user.role.toLowerCase() === "admin") navigate("/admin-dashboard");
-      else navigate("/student-dashboard");
+      // ⏳ Small delay for UX, then go to login
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
     } catch (err) {
       console.error(err);
       setError(err.message || "Registration failed");
@@ -64,33 +58,26 @@ function Register() {
         <div className="absolute -top-52 -left-52 w-[700px] h-[700px] rounded-full bg-gradient-to-r from-blue-600 via-cyan-400 to-purple-500 opacity-30 blur-[180px] animate-blobSlow"></div>
         <div className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-red-400 opacity-20 blur-[160px] animate-blobSlow delay-2000"></div>
         <div className="absolute top-1/4 right-1/3 w-[300px] h-[300px] rounded-full bg-cyan-500 opacity-25 blur-[100px] animate-pulse"></div>
-        {[...Array(25)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 rounded-full bg-white/20 animate-ping"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 2}s`,
-              animationDuration: `${2 + Math.random() * 3}s`,
-            }}
-          />
-        ))}
       </div>
 
       {/* Form */}
-      <div className="relative z-10 w-full max-w-md bg-black/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-10 shadow-2xl hover:shadow-[0_0_60px_rgba(99,102,241,0.5)] transition">
+      <div className="relative z-10 w-full max-w-md bg-black/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-10 shadow-2xl">
         <h2 className="text-4xl font-extrabold text-center mb-4">
           Create{" "}
           <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
             Account
           </span>
         </h2>
-        <p className="text-center text-gray-300 mb-8">Join us and start your learning journey</p>
 
         {error && (
           <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-300 text-sm">
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-xl text-green-300 text-sm">
+            {success}
           </div>
         )}
 
@@ -100,7 +87,7 @@ function Register() {
             placeholder="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="bg-black/40 text-white placeholder-gray-300 px-5 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="bg-black/40 text-white px-5 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
 
@@ -118,7 +105,7 @@ function Register() {
             placeholder="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="bg-black/40 text-white placeholder-gray-300 px-5 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="bg-black/40 text-white px-5 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
 
@@ -128,13 +115,13 @@ function Register() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-black/40 text-white placeholder-gray-300 px-5 py-3 pr-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-black/40 text-white px-5 py-3 pr-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-cyan-400 transition duration-300"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
             >
               {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
             </button>
@@ -143,26 +130,19 @@ function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-full font-semibold bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400 hover:from-purple-600 hover:via-blue-600 hover:to-cyan-500 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 rounded-full font-semibold bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400 disabled:opacity-50"
           >
             {loading ? "Creating account..." : "Register"}
           </button>
         </form>
 
         <div className="mt-8 text-center text-gray-300">
-          <p>
-            Already have an account?{" "}
-            <Link to="/login" className="text-blue-400 hover:underline font-semibold">
-              Login
-            </Link>
-          </p>
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-400 font-semibold hover:underline">
+            Login
+          </Link>
         </div>
       </div>
-
-      <style>{`
-        @keyframes blobSlow {0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-50px) scale(1.1)}66%{transform:translate(-20px,20px) scale(0.9)}}
-        .animate-blobSlow{animation:blobSlow 15s infinite ease-in-out;}
-      `}</style>
     </section>
   );
 }

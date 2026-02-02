@@ -5,9 +5,9 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [role, setRole] = useState(null);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
-  
+  /* Restore auth on refresh */
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedRole = localStorage.getItem("role");
@@ -17,10 +17,10 @@ export const AuthProvider = ({ children }) => {
       setRole(storedRole.toLowerCase());
     }
 
-    setLoading(false); 
+    setLoading(false);
   }, []);
 
-  // Login
+  /* Login */
   const login = (token, role) => {
     localStorage.setItem("token", token);
     localStorage.setItem("role", role.toLowerCase());
@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
     setRole(role.toLowerCase());
   };
 
-  // Logout
+  /* Logout */
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
@@ -37,6 +37,15 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setRole(null);
   };
+
+  /* BLOCK rendering until auth is ready */
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="animate-spin h-12 w-12 border-4 border-cyan-400 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider
@@ -46,6 +55,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         logout,
+        isAuthenticated: !!token,
       }}
     >
       {children}
@@ -53,7 +63,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Hook
+/* Hook */
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
