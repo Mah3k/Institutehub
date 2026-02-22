@@ -31,16 +31,15 @@ function AdminDashboard() {
         "Content-Type": "application/json",
       };
 
-      // ✅ FIXED API ROUTES (added /api/)
       const [studentsRes, inquiriesRes, coursesRes] = await Promise.all([
         fetch(`${API_URL}/api/admin/students`, { headers }),
         fetch(`${API_URL}/api/admin/inquiries`, { headers }),
-        fetch(`${API_URL}/api/courses`)
+        fetch(`${API_URL}/api/courses`),
       ]);
 
-      if (!studentsRes.ok) throw new Error("Failed to fetch students");
-      if (!inquiriesRes.ok) throw new Error("Failed to fetch inquiries");
-      if (!coursesRes.ok) throw new Error("Failed to fetch courses");
+      if (!studentsRes.ok) throw new Error("Students fetch failed");
+      if (!inquiriesRes.ok) throw new Error("Inquiries fetch failed");
+      if (!coursesRes.ok) throw new Error("Courses fetch failed");
 
       const studentsData = await studentsRes.json();
       const inquiriesData = await inquiriesRes.json();
@@ -57,6 +56,40 @@ function AdminDashboard() {
     }
   };
 
+  /* ================= DELETE STUDENT ================= */
+  const deleteStudent = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this student?")) return;
+
+    await fetch(`${API_URL}/api/admin/students/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    fetchDashboardData();
+  };
+
+  /* ================= DELETE INQUIRY ================= */
+  const deleteInquiry = async (id) => {
+    if (!window.confirm("Delete this message?")) return;
+
+    await fetch(`${API_URL}/api/admin/inquiries/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    fetchDashboardData();
+  };
+
+  /* ================= MARK AS READ ================= */
+  const markAsRead = async (id) => {
+    await fetch(`${API_URL}/api/admin/inquiries/${id}/read`, {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    fetchDashboardData();
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-white">
@@ -65,18 +98,20 @@ function AdminDashboard() {
     );
   }
 
+  const unreadCount = inquiries.filter((msg) => !msg.isRead).length;
+
   return (
     <div className="min-h-screen bg-black text-white p-8">
       <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
-      {/* Stats Section */}
+      {/* ================= STATS ================= */}
       <div className="grid grid-cols-3 gap-6 mb-10">
         <Stat title="Total Students" value={students.length} />
         <Stat title="Total Courses" value={coursesCount} />
-        <Stat title="Messages" value={inquiries.length} />
+        <Stat title="Unread Messages" value={unreadCount} />
       </div>
 
-      {/* Students Section */}
+      {/* ================= STUDENTS ================= */}
       <h2 className="text-2xl font-bold mb-4">Students</h2>
 
       {students.length === 0 ? (
@@ -98,12 +133,19 @@ function AdminDashboard() {
               ) : (
                 <p className="text-gray-400 mt-2">Not Enrolled</p>
               )}
+
+              <button
+                onClick={() => deleteStudent(s._id)}
+                className="mt-3 bg-red-600 px-3 py-1 rounded hover:bg-red-700"
+              >
+                Delete
+              </button>
             </div>
           ))}
         </div>
       )}
 
-      {/* Contact Messages */}
+      {/* ================= INQUIRIES ================= */}
       <h2 className="text-2xl font-bold mb-4">Contact Messages</h2>
 
       {inquiries.length === 0 ? (
@@ -111,14 +153,42 @@ function AdminDashboard() {
       ) : (
         <div className="bg-gray-800 rounded-lg p-4">
           {inquiries.map((msg) => (
-            <div key={msg._id} className="border-b border-gray-700 py-3">
-              <p>
-                <strong>{msg.name}</strong> ({msg.email})
-              </p>
-              <p>{msg.message}</p>
-              <p className="text-gray-400 text-sm">
+            <div key={msg._id} className="border-b border-gray-700 py-4">
+              <div className="flex justify-between items-center">
+                <p>
+                  <strong>{msg.name}</strong> ({msg.email})
+                </p>
+
+                {msg.isRead ? (
+                  <span className="text-green-400 text-sm">Read</span>
+                ) : (
+                  <span className="text-red-400 text-sm">Unread</span>
+                )}
+              </div>
+
+              <p className="mt-2">{msg.message}</p>
+
+              <p className="text-gray-400 text-sm mt-1">
                 {new Date(msg.createdAt).toLocaleDateString()}
               </p>
+
+              <div className="flex gap-3 mt-3">
+                {!msg.isRead && (
+                  <button
+                    onClick={() => markAsRead(msg._id)}
+                    className="bg-green-600 px-3 py-1 rounded hover:bg-green-700"
+                  >
+                    Mark as Read
+                  </button>
+                )}
+
+                <button
+                  onClick={() => deleteInquiry(msg._id)}
+                  className="bg-red-600 px-3 py-1 rounded hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ))}
         </div>
