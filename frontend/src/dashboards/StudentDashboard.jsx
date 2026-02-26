@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { FaUserGraduate } from "react-icons/fa";
 
 const API_URL = "https://institutehub-iev4.onrender.com/api";
 
@@ -12,12 +13,10 @@ function StudentDashboard() {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  /* Fetch dashboard data */
   useEffect(() => {
     if (token) {
       fetchDashboard();
     }
-    // eslint-disable-next-line
   }, [token]);
 
   const fetchDashboard = async () => {
@@ -48,7 +47,6 @@ function StudentDashboard() {
     }
   };
 
-  /* Unenroll */
   const handleUnenroll = async () => {
     if (!window.confirm("Are you sure you want to unenroll from this course?"))
       return;
@@ -71,116 +69,125 @@ function StudentDashboard() {
     }
   };
 
-  /* Loader */
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="animate-spin h-14 w-14 border-4 border-cyan-400 border-t-transparent rounded-full"></div>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin h-14 w-14 border-4 border-blue-500 border-t-transparent rounded-full"></div>
       </div>
     );
   }
 
-  /* SAFETY: user not loaded */
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <div className="min-h-screen flex items-center justify-center bg-white text-gray-800">
         Loading user...
       </div>
     );
   }
 
   return (
-    <section className="relative min-h-screen bg-gradient-to-br from-gray-900 via-black to-blue-950 text-white px-8 py-12 overflow-hidden">
+    <section className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-purple-50 px-8 py-12">
 
-      {/* BACKGROUND EFFECTS */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -top-52 -left-52 w-[700px] h-[700px] bg-gradient-to-r from-blue-600 via-cyan-400 to-purple-500 opacity-30 rounded-full blur-[180px] animate-blobSlow"></div>
-        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-gradient-to-r from-purple-600 via-pink-500 to-red-400 opacity-20 rounded-full blur-[160px] animate-blobSlow delay-2000"></div>
-        <div className="absolute top-1/4 right-1/3 w-[300px] h-[300px] bg-cyan-500 opacity-25 rounded-full blur-[100px] animate-pulse"></div>
+      <div className="max-w-7xl mx-auto space-y-14">
 
-        {[...Array(25)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 rounded-full bg-white/20 animate-ping"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 2}s`,
-              animationDuration: `${2 + Math.random() * 3}s`,
-            }}
-          ></div>
-        ))}
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto space-y-12">
-
-        {/* PROFILE CARD */}
-        <div className="bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col md:flex-row justify-between items-center shadow-lg hover:shadow-cyan-500/40 transition">
-          <div>
-            <h1 className="text-4xl font-extrabold">
+        <div className="space-y-4">
+          <div className="flex items-center gap-4">
+            <FaUserGraduate className="text-4xl text-blue-600" />
+            <h1 className="text-5xl font-extrabold text-gray-800">
               Welcome,{" "}
-              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(139,92,246,0.8)]">
+              <span className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent">
                 {user.name}
               </span>
             </h1>
-            <p className="text-gray-300 mt-1">{user.email}</p>
-            <p className="text-sm text-gray-400 mt-2">
-              Role:{" "}
-              <span className="capitalize bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-                {user.role}
-              </span>
+          </div>
+
+          <p className="text-lg text-gray-600">{user.email}</p>
+
+          <p className="text-lg">
+            Role:{" "}
+            <span className="capitalize font-semibold bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 bg-clip-text text-transparent">
+              {user.role}
+            </span>
+          </p>
+
+          <p className={`text-lg font-semibold ${course ? "text-green-600" : "text-gray-500"}`}>
+            {course ? "Enrolled in a Course" : "Not Enrolled in Any Course"}
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+
+          <div className="rounded-3xl shadow-lg p-8 bg-gradient-to-br from-blue-100 to-purple-100 border border-blue-200">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">
+              📊 Learning Overview
+            </h3>
+            <p className="text-gray-700 mb-2">
+              Active Course: {course ? course.title : "None"}
+            </p>
+            <p className="text-gray-700">
+              Progress: {course ? "In Progress" : "0%"}
             </p>
           </div>
 
-          <span
-            className={`mt-6 md:mt-0 px-6 py-2 rounded-full text-sm font-semibold ${
-              course
-                ? "bg-green-500/20 text-green-400"
-                : "bg-gray-500/20 text-gray-400"
-            }`}
-          >
-            {course ? "Enrolled" : "Not Enrolled"}
-          </span>
+          <div className="rounded-3xl shadow-lg p-8 bg-gradient-to-br from-green-100 to-teal-100 border border-green-200">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">
+              🏆 Achievements
+            </h3>
+            <p className="text-gray-700">
+              Complete courses to earn certificates and badges.
+            </p>
+          </div>
+
+          <div className="rounded-3xl shadow-lg p-8 bg-gradient-to-br from-yellow-100 to-orange-100 border border-yellow-200">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">
+              🎯 Goals
+            </h3>
+            <p className="text-gray-700">
+              Stay consistent and finish your enrolled course successfully.
+            </p>
+          </div>
+
         </div>
 
-        {/* COURSE SECTION */}
         <div>
-          <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-            🎓 My Course
+          <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent">
+            My Course
           </h2>
 
           {!course ? (
-            <div className="bg-white/5 border border-white/10 rounded-3xl p-10 text-center shadow-lg">
-              <p className="text-gray-300 mb-4">
+            <div className="bg-white rounded-3xl shadow-lg p-10 text-center border border-gray-100">
+              <p className="text-gray-600 mb-4">
                 You are not enrolled in any course yet.
               </p>
               <button
                 onClick={() => navigate("/courses")}
-                className="mt-4 px-6 py-2 rounded-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold"
+                className="px-6 py-3 rounded-full bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 text-white font-semibold"
               >
                 Browse Courses
               </button>
             </div>
           ) : (
-            <div className="grid md:grid-cols-3 gap-8 items-center">
+            <div className="grid md:grid-cols-3 gap-8 items-center rounded-3xl shadow-lg p-8 bg-gradient-to-br from-purple-100 to-blue-100 border border-purple-200">
               <img
                 src={course.image}
                 alt={course.title}
-                className="h-56 w-full object-cover rounded-2xl shadow-lg"
+                className="h-56 w-full object-cover rounded-2xl"
               />
 
               <div className="md:col-span-2">
-                <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                <h3 className="text-3xl font-bold text-gray-800 mb-2">
                   {course.title}
                 </h3>
-                <p className="text-gray-300 mb-4">{course.description}</p>
-                <p className="text-gray-400 text-sm mb-4">
+                <p className="text-gray-700 mb-4">
+                  {course.description}
+                </p>
+                <p className="text-gray-600 text-sm mb-4">
                   ⏳ {course.duration} | 🎯 {course.level}
                 </p>
 
                 <button
                   onClick={handleUnenroll}
-                  className="px-6 py-2 rounded-full bg-red-500/20 border border-red-400 text-red-400"
+                  className="px-6 py-2 rounded-full border border-red-400 text-red-500 hover:bg-red-200 transition"
                 >
                   Unenroll from Course
                 </button>
@@ -188,18 +195,8 @@ function StudentDashboard() {
             </div>
           )}
         </div>
-      </div>
 
-      <style>{`
-        @keyframes blobSlow {
-          0%, 100% { transform: translate(0,0) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-        }
-        .animate-blobSlow {
-          animation: blobSlow 15s infinite ease-in-out;
-        }
-      `}</style>
+      </div>
     </section>
   );
 }

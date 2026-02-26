@@ -13,46 +13,45 @@ function MyCourseCard({ course }) {
     user?.enrolledCourse && user.enrolledCourse === course._id;
 
   return (
-    <div className="group relative rounded-3xl transition transform hover:-translate-y-2">
-      <div className="absolute inset-0 rounded-3xl pointer-events-none
-        ring-1 ring-white/10
-        group-hover:ring-2
-        group-hover:ring-cyan-400/80
-        group-hover:shadow-[0_0_25px_rgba(34,211,238,0.6)]
-        transition duration-500"
+    <div className="group relative bg-white border border-gray-200 rounded-3xl shadow-md hover:shadow-2xl transition duration-500 transform hover:-translate-y-2">
+
+      {/* Course Image */}
+      <img
+        src={course.image || "https://via.placeholder.com/400x250"}
+        alt={course.title || "Course"}
+        className="w-full h-48 object-cover rounded-t-3xl"
       />
 
-      <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6">
-        <img
-          src={course.image || "https://via.placeholder.com/400x250"}
-          alt={course.title || "Course"}
-          className="w-full h-48 object-cover rounded-2xl mb-4"
-        />
+      <div className="p-6">
 
-        <h3 className="text-2xl font-bold text-blue-400 mb-2">
+        {/* Course Title */}
+        <h3 className="text-2xl font-bold text-orange-500 mb-2">
           {course.title || "Untitled Course"}
         </h3>
 
-        <p className="text-gray-300 mb-3 line-clamp-3">
+        {/* Description */}
+        <p className="text-gray-600 mb-3 line-clamp-3">
           {course.description || "No description available."}
         </p>
 
-        <p className="text-gray-400 text-sm mb-6">
+        {/* Duration & Level */}
+        <p className="text-gray-500 text-sm mb-6">
           ⏳ {course.duration || "N/A"} | 🎯 {course.level || "N/A"}
         </p>
 
+        {/* Buttons */}
         {isStudent ? (
           isAlreadyEnrolled ? (
-            <div className="w-full text-center py-2 rounded-full bg-green-500/20 border border-green-400 text-green-400 font-semibold">
+            <div className="w-full text-center py-2 rounded-full bg-green-100 border border-green-400 text-green-600 font-semibold">
               ✔ Already Enrolled
             </div>
           ) : (
             <Link
               to={`/courses/${course._id}`}
               className="block w-full text-center py-2 rounded-full
-              bg-gradient-to-r from-blue-500 to-cyan-500
-              hover:from-blue-600 hover:to-cyan-600
-              font-semibold text-white transition"
+              bg-gradient-to-r from-pink-500 to-orange-400
+              hover:from-pink-600 hover:to-orange-500
+              font-semibold text-white transition duration-300 shadow-md hover:shadow-lg"
             >
               View & Enroll
             </Link>
@@ -61,9 +60,9 @@ function MyCourseCard({ course }) {
           <Link
             to={`/courses/${course._id}`}
             className="block w-full text-center py-2 rounded-full
-            bg-gradient-to-r from-purple-500 to-pink-500
-            hover:from-purple-600 hover:to-pink-600
-            font-semibold text-white transition"
+            bg-gradient-to-r from-pink-500 to-orange-400
+            hover:from-pink-600 hover:to-orange-500
+            font-semibold text-white transition duration-300 shadow-md hover:shadow-lg"
           >
             View Details
           </Link>

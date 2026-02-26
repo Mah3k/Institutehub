@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
-// ✅ Backend auth URL
 const API_URL = "https://institutehub-iev4.onrender.com/api/auth";
 
 function Register() {
@@ -36,10 +35,8 @@ function Register() {
         throw new Error(data.message || "Registration failed");
       }
 
-      // ✅ Registration success (NO auto-login)
       setSuccess("Registration successful. Please login.");
 
-      // ⏳ Small delay for UX, then go to login
       setTimeout(() => {
         navigate("/login");
       }, 1500);
@@ -52,52 +49,60 @@ function Register() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-6 text-white overflow-hidden bg-gray-900">
-      {/* Background blobs */}
-      <div className="absolute inset-0">
-        <div className="absolute -top-52 -left-52 w-[700px] h-[700px] rounded-full bg-gradient-to-r from-blue-600 via-cyan-400 to-purple-500 opacity-30 blur-[180px] animate-blobSlow"></div>
-        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-red-400 opacity-20 blur-[160px] animate-blobSlow delay-2000"></div>
-        <div className="absolute top-1/4 right-1/3 w-[300px] h-[300px] rounded-full bg-cyan-500 opacity-25 blur-[100px] animate-pulse"></div>
+    <section className="min-h-screen flex flex-col items-center justify-center px-6 bg-gradient-to-br from-white via-blue-50 to-purple-50">
+
+      <div className="text-center mb-10">
+        <h1 className="text-5xl font-extrabold text-gray-800">
+          Institute
+          <span className="bg-gradient-to-r from-purple-600 via-blue-500 to-cyan-400 bg-clip-text text-transparent">
+            Hub
+          </span>
+        </h1>
+        <p className="text-gray-600 mt-3 text-lg">
+          Empowering students with industry-ready skills
+        </p>
       </div>
 
-      {/* Form */}
-      <div className="relative z-10 w-full max-w-md bg-black/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-10 shadow-2xl">
-        <h2 className="text-4xl font-extrabold text-center mb-4">
-          Create{" "}
-          <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-            Account
-          </span>
+      <div className="w-full max-w-md bg-white border border-gray-200 rounded-3xl p-10 shadow-2xl">
+
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
+          Create Account
         </h2>
 
+        <p className="text-center text-gray-500 mb-8">
+          Register to start your learning journey
+        </p>
+
         {error && (
-          <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-300 text-sm">
+          <div className="mb-6 p-4 bg-red-100 border border-red-300 rounded-xl text-red-600 text-sm">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-xl text-green-300 text-sm">
+          <div className="mb-6 p-4 bg-green-100 border border-green-300 rounded-xl text-green-600 text-sm">
             {success}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+
           <input
             type="text"
             placeholder="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="bg-black/40 text-white px-5 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="bg-gray-50 text-gray-800 placeholder-gray-400 px-5 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
             required
           />
 
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="bg-black/40 text-white px-5 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="bg-gray-50 text-gray-800 px-5 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            <option value="student" className="text-black">Student</option>
-            <option value="admin" className="text-black">Admin</option>
+            <option value="student">Student</option>
+            <option value="admin">Admin</option>
           </select>
 
           <input
@@ -105,7 +110,7 @@ function Register() {
             placeholder="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="bg-black/40 text-white px-5 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="bg-gray-50 text-gray-800 placeholder-gray-400 px-5 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
             required
           />
 
@@ -115,13 +120,13 @@ function Register() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-black/40 text-white px-5 py-3 pr-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-50 text-gray-800 placeholder-gray-400 px-5 py-3 pr-12 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-green-500 transition"
             >
               {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
             </button>
@@ -130,18 +135,22 @@ function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-full font-semibold bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400 disabled:opacity-50"
+            className="w-full py-3 rounded-full font-semibold text-white bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 hover:scale-105 transition disabled:opacity-50"
           >
             {loading ? "Creating account..." : "Register"}
           </button>
         </form>
 
-        <div className="mt-8 text-center text-gray-300">
+        <div className="mt-8 text-center text-gray-600 text-sm">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-400 font-semibold hover:underline">
+          <Link
+            to="/login"
+            className="text-green-600 hover:underline font-semibold"
+          >
             Login
           </Link>
         </div>
+
       </div>
     </section>
   );

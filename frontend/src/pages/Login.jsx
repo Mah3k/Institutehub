@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 
-// ✅ Backend auth URL
 const API_URL = "https://institutehub-iev4.onrender.com/api/auth";
 
 function Login() {
@@ -43,10 +42,8 @@ function Login() {
 
       const role = data.user.role.toLowerCase();
 
-      // ✅ Save auth state
       login(data.token, role);
 
-      // ✅ Redirect based on role
       if (role === "admin") {
         navigate("/admin-dashboard");
       } else {
@@ -61,31 +58,32 @@ function Login() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-6 text-white overflow-hidden bg-gray-900">
+    <section className="min-h-screen flex flex-col items-center justify-center px-6 bg-gradient-to-br from-white via-blue-50 to-purple-50">
 
-      {/* Background blobs */}
-      <div className="absolute inset-0">
-        <div className="absolute -top-52 -left-52 w-[700px] h-[700px] rounded-full bg-gradient-to-r from-blue-600 via-cyan-400 to-purple-500 opacity-30 blur-[180px] animate-blobSlow"></div>
-        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-600 via-pink-500 to-red-400 opacity-20 blur-[160px] animate-blobSlow delay-2000"></div>
-        <div className="absolute top-1/4 right-1/3 w-[300px] h-[300px] rounded-full bg-cyan-500 opacity-25 blur-[100px] animate-pulse"></div>
+      <div className="text-center mb-10">
+        <h1 className="text-5xl font-extrabold text-gray-800">
+          Institute
+          <span className="bg-gradient-to-r from-purple-600 via-blue-500 to-cyan-400 bg-clip-text text-transparent">
+            Hub
+          </span>
+        </h1>
+        <p className="text-gray-600 mt-3 text-lg">
+          Empowering students with industry-ready skills
+        </p>
       </div>
 
-      {/* Login Card */}
-      <div className="relative z-10 w-full max-w-md bg-black/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-10 shadow-2xl">
+      <div className="w-full max-w-md bg-white border border-gray-200 rounded-3xl p-10 shadow-2xl">
 
-        <h2 className="text-4xl font-extrabold text-center mb-4">
-          Welcome{" "}
-          <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-            Back
-          </span>
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
+          Welcome Back
         </h2>
 
-        <p className="text-center text-gray-300 mb-8">
-          Login to continue your learning journey
+        <p className="text-center text-gray-500 mb-8">
+          Login to access your dashboard and continue learning
         </p>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-300 text-sm">
+          <div className="mb-6 p-4 bg-red-100 border border-red-300 rounded-xl text-red-600 text-sm">
             {error}
           </div>
         )}
@@ -98,7 +96,7 @@ function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="bg-black/40 text-white placeholder-gray-300 px-5 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="bg-gray-50 text-gray-800 placeholder-gray-400 px-5 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
           />
 
           <div className="relative">
@@ -108,13 +106,13 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full bg-black/40 text-white placeholder-gray-300 px-5 py-3 pr-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-50 text-gray-800 placeholder-gray-400 px-5 py-3 pr-12 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
 
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-cyan-400 transition"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-green-500 transition"
             >
               {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
             </button>
@@ -123,31 +121,23 @@ function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-full font-semibold bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400 disabled:opacity-50"
+            className="w-full py-3 rounded-full font-semibold text-white bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 hover:scale-105 transition disabled:opacity-50"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        <div className="mt-8 text-center text-gray-300">
+        <div className="mt-8 text-center text-gray-600 text-sm">
           Don’t have an account?{" "}
-          <Link to="/register" className="text-blue-400 hover:underline font-semibold">
+          <Link
+            to="/register"
+            className="text-green-600 hover:underline font-semibold"
+          >
             Register
           </Link>
         </div>
+
       </div>
-
-      <style>{`
-        @keyframes blobSlow {
-          0%,100% { transform: translate(0,0) scale(1); }
-          33% { transform: translate(30px,-50px) scale(1.1); }
-          66% { transform: translate(-20px,20px) scale(0.9); }
-        }
-        .animate-blobSlow {
-          animation: blobSlow 15s infinite ease-in-out;
-        }
-      `}</style>
-
     </section>
   );
 }
